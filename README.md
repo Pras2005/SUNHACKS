@@ -1,115 +1,63 @@
-# SUNHACKS
+# SUNHACKS - ATS (Applicant Tracking System)
 
-## Table of Contents
+An AI-powered Applicant Tracking System built with **Django**. This platform streamlines the recruitment process by automatically parsing applicant resumes (both PDF and image formats) and extracting relevant skills, key performance metrics (like CGPA), and total experience using **Google Generative AI (Gemini)**.
 
-- [Deep Dive Description](#deep-dive-description)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Usage / Running Locally](#usage--running-locally)
+## Core Domain Models & Features
 
-## Deep Dive Description
-
-SUNHACKS is a robust software engineering project carefully architected to provide scalable and efficient functionality. Built primarily in Python, this repository likely leverages modern frameworks to deliver high-performance backend processing, data analysis, or scripting utilities. Dependencies are managed via `requirements.txt`, ensuring reproducible environments. The data architecture is defined using structured models and schemas, allowing for clean data validation and database ORM interactions. 
-
-The core functionality involves processing inputs, managing state or data persistence, and delivering outputs or serving API endpoints as dictated by the specific modular implementations found within the file tree. By breaking down the logic into distinct modules, the system ensures that each component handles a single responsibility, paving the way for easier testing and future feature expansions.
-
-## Project Structure
-
-```text
-SUNHACKS/
-├── README.md
-├── SUNHACKS.code-workspace
-├── ats
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   ├── 0002_alter_applicant_resume.py
-│   │   ├── 0003_remove_applicant_cgpa_remove_applicant_exp_and_more.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── static
-│   │   ├── assets
-│   │   │   ├── ATS.png
-│   │   │   ├── Login & Registration Form.png
-│   │   │   ├── fb.svg
-│   │   │   ├── gogo.svg
-│   │   │   ├── google.png
-│   │   │   ├── google4.jpeg
-│   │   │   ├── hero_arrow.svg
-│   │   │   ├── hero_ilus.svg
-│   │   │   ├── hero_image.png
-│   │   │   ├── how_it_works.svg
-│   │   │   ├── instagram.svg
-│   │   │   ├── log.svg
-│   │   │   ├── mainbk.png
-│   │   │   ├── quote.svg
-│   │   │   ├── register.svg
-│   │   │   ├── rocket.png
-│   │   │   ├── thankuimage.jpeg
-│   │   │   ├── tick.svg
-│   │   │   ├── twitter.svg
-│   │   │   └── youtube.svg
-│   │   ├── css
-│   │   │   ├── login.css
-│   │   │   ├── main.css
-│   │   │   ├── resume.css
-│   │   │   ├── style.css
-│   │   │   └── thanku.css
-│   │   └── js
-│   │       └── login.js
-│   ├── templates
-│   │   ├── index.html
-│   │   ├── login.html
-│   │   ├── main.html
-│   │   ├── resume.html
-│   │   └── thank.html
-│   ├── tests.py
-│   └── views.py
-... (truncated for brevity)
-```
+- **Automated Resume Parsing**: Handles both PDF (using `PyMuPDF`/`fitz`) and Image (`.jpg`, `.png`) uploads. 
+- **AI-Driven Data Extraction**: Integrates with Google's Generative AI (`gemini-pro` and `gemini-pro-vision`) to run intelligent prompts that extract specific structured metadata (skills, CGPA, total experience duration) directly from unstructured resume text or images.
+- **Applicant Management**: Stores parsed data in a local SQLite database under the `Applicant` model, mapping contact information directly alongside AI-generated skill summaries.
 
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
-- Python 3.8+
-- pip (Python package installer)
-- Virtualenv (recommended)
-- Git
+- **Python 3.8+**
+- **SQLite3**
+- **Google Generative AI API Key** (Required for Gemini access)
 
 ## Installation & Setup
 
-Follow these step-by-step instructions to get a development environment running:
-
-1. **Clone the repository:**
+1. **Clone the repository**:
    ```bash
-   git clone git@github.com:Pras2005/SUNHACKS.git
+   git clone <repo-url>
    cd SUNHACKS
    ```
-
-2. **Set up a virtual environment:**
+2. **Create and activate a virtual environment**:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate
    ```
-
-3. **Install dependencies:**
+3. **Install Dependencies**:
    ```bash
    pip install -r requirements.txt
+   # Ensure PyMuPDF, google-generativeai, and Django are installed
    ```
-
-4. **Environment Variables:**
-   If there is a `.env.example` file, copy it to `.env` and configure the necessary keys:
+4. **Configure API Key**:
+   - Locate the API key configurations in `ats/views.py`.
+   - Replace the hardcoded `api_key` with your valid Google API Key (or ideally, move it to an environment variable).
+5. **Run Migrations**:
    ```bash
-   cp .env.example .env
+   python manage.py makemigrations
+   python manage.py migrate
    ```
 
 ## Usage / Running Locally
 
-Start the application by running the main entry script:
+To run the application locally:
 ```bash
-python main.py
+python manage.py runserver
 ```
-*(If the entry point is different, replace `main.py` with the appropriate script like `app.py` or run via Uvicorn/Flask)*
+Navigate to `http://127.0.0.1:8000/` to access the applicant interface, upload a resume, and trigger the AI parsing pipeline.
+
+## Project Structure
+
+```text
+.
+├── k/                       # Django project settings and WSGI/ASGI configurations
+├── ats/                     # Core App logic
+│   ├── models.py            # Applicant and Keyword schema definitions
+│   ├── views.py             # Route handlers and Gemini AI extraction logic (pdfkey, imgkey)
+│   ├── templates/           # HTML views (index, login, resume, thank)
+│   └── static/              # CSS and JS assets
+├── db.sqlite3               # Local database
+└── manage.py                # Django execution entry point
+```
